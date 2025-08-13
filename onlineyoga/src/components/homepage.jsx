@@ -1,184 +1,158 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { Container, Navbar, Nav, Carousel } from "react-bootstrap";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import gsap from "gsap";
-import { HomeNavbarAnimation } from "../utils/gsapAnimation";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import img1 from '../assets/image.png';
-import img2 from '../assets/img1.jpeg';
-import img3 from '../assets/img2.jpeg';
-import './custom-navbar.css';
+
+import {
+  HomeNavbarAnimation,
+  useHomePageHeroSection,
+  useHomePageContentSection
+} from "../utils/gsapAnimation";
+
+import img1 from "../assets/img1.jpg";
+import img2 from "../assets/img2.jpg";
+import img3 from "../assets/img3.jpg";
+
+import "../index.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Homepage = () => {
   const navbarRef = useRef(null);
-  const headingRef = useRef(null);
-  const subtextRef = useRef(null);
 
   useEffect(() => {
-  const ctx = gsap.context(() => {
-    gsap.from(headingRef.current, {
-      y: 50,
-      opacity: 0,
-      duration: 2,
-      ease: "power3.out",
-    });
+    HomeNavbarAnimation(navbarRef);
+  }, []);
 
-    gsap.from(subtextRef.current, {
-      y: 30,
+  useHomePageHeroSection();
+  useHomePageContentSection();
+
+  // Footer columns animation
+  useEffect(() => {
+    gsap.set(['.footer-column.left-col', '.footer-column.right-col'], { opacity: 1, x: 0 });
+
+    gsap.from(".footer-column.left-col", {
+      x: -200,
       opacity: 0,
-      delay: 0.3,
       duration: 1,
       ease: "power3.out",
+      scrollTrigger: {
+        trigger: ".footer-section",
+        start: "top 85%",
+        toggleActions: "play none none none"
+      }
     });
-  }, [headingRef, subtextRef]);
 
-  return () => ctx.revert(); // Cleanup on unmount
-}, []);
+    gsap.from(".footer-column.right-col", {
+      x: 200,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: ".footer-section",
+        start: "top 85%",
+        toggleActions: "play none none none"
+      }
+    });
+  }, []);
 
   const popularSessions = [
-    { img: img1, title: "Beginner Morning Routine" },
-    { img: img2, title: "Power Yoga for Weight Loss" },
-    { img: img3, title: "Kids Yoga Fun Session" },
+    { img: img1, title: "Morning Flow" },
+    { img: img2, title: "Power Yoga" },
+    { img: img3, title: "Kids Session" }
   ];
 
   return (
-    <div style={styles.container}>
+    <div className="homepage-container">
       {/* Navbar */}
       <Navbar ref={navbarRef} className="custom-navbar" variant="dark" expand="lg" fixed="top">
         <Container>
-          <Navbar.Brand style={styles.projectTitle}>YogaStream</Navbar.Brand>
+          <Navbar.Brand href="#home" className="project-title">YogaStream</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link href="#about" style={styles.navLink}>About Us</Nav.Link>
-              <Nav.Link href="/register" style={styles.navLink}>Register</Nav.Link>
-              <Nav.Link href="/login" style={styles.navLink}>Login</Nav.Link>
+              <Nav.Link href="#home" className="nav-link-custom">Home</Nav.Link>
+              <Nav.Link href="#about" className="nav-link-custom">About Us</Nav.Link>
+              <Nav.Link href="/register" className="nav-link-custom">Register</Nav.Link>
+              <Nav.Link href="/login" className="nav-link-custom">Sign In</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
+{/* Hero Section */}
+<main className="hero-carousel-section" id="home">
+  <Carousel fade interval={4000} pause="hover" indicators controls>
+    {popularSessions.map((session, index) => (
+      <Carousel.Item key={index} className="hero-slide">
+        <img
+          className="d-block w-100 carousel-hero-image"
+          src={session.img}
+          alt={session.title}
+        />
+        <Carousel.Caption>
+          {/* Full-screen overlay */}
+          <div className="hero-overlay"></div>
 
-      {/* Hero Section */}
-      <main style={styles.heroSection}>
-        <div style={styles.heroOverlay}>
-          <h1 ref={headingRef} style={styles.heroHeading}>
+          {/* Text above overlay */}
+          <h1 className="hero-heading animate-hero-title">
             Embrace Wellness with Online Yoga
           </h1>
-          <p ref={subtextRef} style={styles.heroSubtext}>
-            Learn from certified instructors with live and on-demand yoga classes.
+          <p className="hero-subtext animate-hero-sub">
+            {session.title} – Live & On-Demand Yoga with Certified Instructors.
           </p>
-        </div>
-      </main>
+        </Carousel.Caption>
+      </Carousel.Item>
+    ))}
+  </Carousel>
+</main>
+
 
       {/* About Section */}
-      <section id="about" style={styles.aboutSection}>
+      <section id="about" className="about-section">
         <Container>
-          <h2 className="mb-4 text-white">About Online Yoga</h2>
-          <p style={styles.aboutText}>
-            YogaStream connects individuals with expert instructors for guided yoga sessions—anytime, anywhere. We offer beginner to advanced programs, kids' sessions, and therapeutic yoga practices. Stay active, mindful, and balanced with us.
+          <div className="slice animate-about-title" tabIndex="0" style={{ display: "inline-block", marginBottom: "1em" }}>
+            <span className="text">About Online Yoga</span>
+          </div>
+          <p className="about-text animate-about-text">
+            YogaStream is a comprehensive online platform that connects individuals
+            with certified yoga instructors to provide guided sessions that can be
+            accessed anytime, anywhere. Whether you're a beginner or an advanced
+            practitioner, YogaStream offers tailored programs to suit every level.
           </p>
         </Container>
       </section>
 
-      {/* Popular Sessions Carousel */}
-      <section style={styles.projectsSection}>
-        <Container>
-          <h2 className="mb-4 text-white">Popular Sessions</h2>
-          <Carousel fade interval={2000} pause="hover" indicators controls>
-            {popularSessions.map((session, index) => (
-              <Carousel.Item key={index}>
-                <img
-                  className="d-block w-100"
-                  src={session.img}
-                  alt={session.title}
-                  style={{ maxHeight: '500px', objectFit: 'cover' }}
-                />
-                <Carousel.Caption>
-                  <h3 style={styles.carouselCaption}>{session.title}</h3>
-                </Carousel.Caption>
-              </Carousel.Item>
-            ))}
-          </Carousel>
+      {/* Footer */}
+      <footer className="footer-section">
+        <Container className="text-center">
+          <div className="footer-row">
+            <div className="footer-column left-col">
+              <h5 className="footer-heading">Quick Links</h5>
+              <a href="#home" className="footer-link">Home</a>
+              <a href="#about" className="footer-link">About Us</a>
+              <a href="/login" className="footer-link">Sign In</a>
+            </div>
+
+            <div className="footer-divider"></div>
+
+            <div className="footer-column right-col">
+              <h5 className="footer-heading">Contact Us</h5>
+              <p className="footer-text">
+                📧 <a href="mailto:anjithaanji103@gmail.com">anjithaanji103@gmail.com</a><br />
+                📞 <a href="tel:+917306739589">7306739589</a><br />
+                📍 Kochi, Kerala, India
+              </p>
+            </div>
+          </div>
+
+          <div className="footer-credit mt-3">
+            © {new Date().getFullYear()} YogaStream. All rights reserved.
+          </div>
         </Container>
-      </section>
+      </footer>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#102d3dff',
-  },
-  projectTitle: {
-    fontWeight: 'bold',
-    fontSize: '28px',
-    color: '#ffffff',
-  },
-  navLink: {
-    color: '#ffffff',
-    marginRight: '15px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  heroSection: {
-    marginTop: '70px',
-    height: '90vh',
-    backgroundImage: `url('https://images.unsplash.com/photo-1588286840104-8957b019727f?w=1600')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    position: 'relative',
-  },
-  heroOverlay: {
-    padding: '40px',
-    borderRadius: '12px',
-    maxWidth: '700px',
-  },
-  heroHeading: {
-    fontSize: '48px',
-    fontWeight: 'bold',
-    color: '#ffffff', // Make text white
-    textShadow: '2px 2px 4px rgba(0,0,0,0.7)', // Optional: adds readability
-  },
-  heroSubtext: {
-    fontSize: '20px',
-    marginTop: '20px',
-    color: '#ffffff', // Make subtext white
-    textShadow: '1px 1px 3px rgba(0,0,0,0.6)', // Optional: improves contrast
-  },
-  aboutSection: {
-    padding: '80px 0',
-    color: '#dddddd',
-  },
-  aboutText: {
-    fontSize: '18px',
-    lineHeight: '1.7',
-    color: '#cccccc',
-  },
-  projectsSection: {
-    padding: '60px 0',
-    backgroundColor: '#102e3aff',
-  },
-   carouselImage: {
-    maxHeight: '350px',
-    width: 'auto',
-    objectFit: 'contain',
-    borderRadius: '12px',
-    margin: '0 auto',
-  },
-  carouselCaption: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: '0.5rem 1rem',
-    borderRadius: '5px',
-    color: '#ffffff',
-    textShadow: '1px 1px 2px black',
-  },
 };
 
 export default Homepage;

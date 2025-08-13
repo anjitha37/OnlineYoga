@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Table, Button, Card, Badge } from 'react-bootstrap';
@@ -7,6 +6,7 @@ import { BiLike, BiDislike } from 'react-icons/bi';
 import { AiFillHeart } from 'react-icons/ai';
 import { BsEmojiNeutral } from 'react-icons/bs';
 import InstructorNav from './instructornav';
+import './instructorNav.css';
 
 const InstructorReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -24,7 +24,6 @@ const InstructorReviews = () => {
         console.error('Error fetching reviews:', err);
       }
     };
-
     fetchReviews();
   }, [instructorId, token]);
 
@@ -48,16 +47,14 @@ const InstructorReviews = () => {
   };
 
   return (
-    <>
+    <div className="instructor-dashboard-wrapper">
       <InstructorNav />
-      <div style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(to right, #f1f8e9, #e1f5fe)',
-        paddingTop: '60px',
-        paddingBottom: '40px'
-      }}>
-        <Container>
-          <Card className="p-4 shadow-lg rounded-4 border-0 glass-card">
+      <div className="instructor-content">
+        <Container style={{ maxWidth: '1100px', padding: '40px 20px' }}>
+          <Card className="p-4 shadow-lg rounded-4 border-0 glass-card" style={{
+            backgroundColor: 'rgba(255,255,255,0.92)',
+            backdropFilter: 'blur(8px)'
+          }}>
             <h3 className="text-center mb-4 text-primary fw-bold">🌟 User Reviews</h3>
             {reviews.length === 0 ? (
               <p className="text-center text-muted">No reviews found.</p>
@@ -136,7 +133,7 @@ const InstructorReviews = () => {
           </Card>
         </Container>
       </div>
-    </>
+    </div>
   );
 };
 

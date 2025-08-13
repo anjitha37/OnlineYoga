@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
 import InstructorNav from './instructornav';
+import './instructorNav.css'; // ✅ for sidebar & background
 
 const EditClass = () => {
   const { id } = useParams(); // class ID from URL
@@ -37,7 +38,7 @@ const EditClass = () => {
 
         setFormData({
           className: foundClass.className,
-          date: foundClass.date?.split('T')[0], // strip time from ISO date
+          date: foundClass.date?.split('T')[0], // format ISO date
           time: foundClass.time,
           duration: foundClass.duration,
           description: foundClass.description,
@@ -52,12 +53,12 @@ const EditClass = () => {
     fetchClass();
   }, [id]);
 
-  // Handle form input changes
+  // Handle input changes
   const handleChange = e => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Submit updated class info
+  // Submit update
   const handleSubmit = async e => {
     e.preventDefault();
     setMessage('');
@@ -78,85 +79,103 @@ const EditClass = () => {
   };
 
   return (
-    
-    <Container className="mt-5">
-      <h2>Edit Class</h2>
-      {message && <Alert variant="success">{message}</Alert>}
-      {error && <Alert variant="danger">{error}</Alert>}
+    <div className="instructor-dashboard-wrapper">
+      {/* Sidebar */}
+      <InstructorNav />
 
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="className">
-          <Form.Label>Class Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="className"
-            value={formData.className}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
+      {/* Main Content */}
+      <div className="instructor-content">
+        <Container style={{ maxWidth: '720px', padding: '40px 20px' }}>
+          <Card
+            className="shadow-lg p-4"
+            style={{
+              borderRadius: '20px',
+              backdropFilter: 'blur(10px)',
+              backgroundColor: 'rgba(255, 255, 255, 0.88)',
+              boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+            }}
+          >
+            <h3 className="text-center text-primary fw-bold mb-4">✏️ Edit Class</h3>
 
-        <Form.Group controlId="date">
-          <Form.Label>Date</Form.Label>
-          <Form.Control
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
+            {message && <Alert variant="success">{message}</Alert>}
+            {error && <Alert variant="danger">{error}</Alert>}
 
-        <Form.Group controlId="time">
-          <Form.Label>Time</Form.Label>
-          <Form.Control
-            type="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="className" className="mb-3">
+                <Form.Label>Class Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="className"
+                  value={formData.className}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
 
-        <Form.Group controlId="duration">
-          <Form.Label>Duration (minutes)</Form.Label>
-          <Form.Control
-            type="number"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
+              <Form.Group controlId="date" className="mb-3">
+                <Form.Label>Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
 
-        <Form.Group controlId="price">
-          <Form.Label>Price (₹)</Form.Label>
-          <Form.Control
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
+              <Form.Group controlId="time" className="mb-3">
+                <Form.Label>Time</Form.Label>
+                <Form.Control
+                  type="time"
+                  name="time"
+                  value={formData.time}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
 
-        <Form.Group controlId="description">
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
+              <Form.Group controlId="duration" className="mb-3">
+                <Form.Label>Duration (minutes)</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="duration"
+                  value={formData.duration}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
 
-        <Button variant="primary" type="submit" className="mt-3">
-          Update Class
-        </Button>
-      </Form>
-    </Container>
+              <Form.Group controlId="price" className="mb-3">
+                <Form.Label>Price (₹)</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group controlId="description" className="mb-4">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
+
+              <Button variant="primary" type="submit" className="w-100 fw-bold">
+                Update Class
+              </Button>
+            </Form>
+          </Card>
+        </Container>
+      </div>
+    </div>
   );
 };
 

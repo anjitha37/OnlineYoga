@@ -1,39 +1,67 @@
-const express=require('express')
-const app=express()
-const mongoose=require('mongoose')
-const cors=require('cors')
-const userRouter=require('./routes/userrouter')
-const adminRouter = require('./routes/adminrouter')
-const instructorRouter = require('./routes/instructorrouter')
-const bookingRouter = require('./routes/bookingrouter')
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+const cors = require('cors');
 const path = require('path');
 
-app.use(cors())
-app.use(express.urlencoded({extended:true}))
-app.use(express.json())
+// Import routes
+const userRouter = require('./routes/userrouter');
+const adminRouter = require('./routes/adminrouter');
+const instructorRouter = require('./routes/instructorrouter');
+const bookingRouter = require('./routes/bookingrouter');
+const paymentRoutes = require('./routes/paymentRoutes');
+const { Routes } = require('react-router-dom');
+require('dotenv').config();
 
-const dbConnect=async()=>{
-    try{
-        await mongoose.connect("mongodb://localhost:27017/yoga")
-        console.log("Database connected successfully")
-    }catch(err){
-        console.log("Error occured",err)
+// ✅ CORS setup with multiple origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174'
+];
+
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g., mobile apps, curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
     }
-}
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
-dbConnect()
+// ✅ Middleware for parsing
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.use('/api/user',userRouter)
-app.use('/api/admin',adminRouter)
-app.use('/api/instructor',instructorRouter)
-// app.use('/uploads', express.static('uploads'));
-
+// ✅ Static folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/api/bookings',bookingRouter)
+// ✅ Connect to MongoDB
+const dbConnect = async () => {
+  try {
+    await mongoose.connect("mongodb://localhost:27017/yoga");
+    console.log("Database connected successfully");
+  } catch (err) {
+    console.log("Error occurred", err);
+  }
+};
+dbConnect();
 
+// ✅ Mount routes
+app.use('/api/user', userRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/instructor', instructorRouter);
+app.use('/api/bookings', bookingRouter);
+app.use('/api/payment', paymentRoutes);
 
-app.listen(9001,()=>{
-    console.log("Server Started Successfully")
-
-})
+// ✅ Start server
+app.listen(9001, () => {
+  console.log("Server Started Successfully");
+});

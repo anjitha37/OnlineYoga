@@ -66,14 +66,23 @@ const getReports = async (req, res) => {
 // Fetch all registered users
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find(); // No select() — gets all fields
+    const users = await User.find({}, {
+      fullname: 1,
+      email: 1,
+      role: 1,
+      phone: 1,
+      age: 1,
+      gender: 1,
+      isApproved: 1,
+      certificate: 1,     // single certificate
+      certificates: 1     // array of certificates
+    });
     res.status(200).json(users);
   } catch (err) {
     console.error("Admin fetch error:", err);
     res.status(500).json({ msg: "Failed to fetch users" });
   }
 };
-
 
 // Approve a user (typically an instructor)
 const approveUser = async (req, res) => {

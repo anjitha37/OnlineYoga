@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import AXIOS from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -16,7 +15,7 @@ export default function Register() {
     experience: "",
     agreeTerms: false,
   });
-  const [certificate, setCertificate] = useState(null);
+  const [certificate, setCertificate] = useState(null); // store file object
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -92,135 +91,198 @@ export default function Register() {
     });
 
     if (certificate) {
-      formData.append("certificate", certificate); // ✅ important: this must match Multer field name
+      formData.append("certificate", certificate); // must match backend multer single("certificate")
     }
 
     try {
       await AXIOS.post("http://localhost:9001/api/user/registeruser", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       alert("User Registered Successfully");
       navigate("/login");
     } catch (err) {
       console.error("Registration error:", err.response?.data || err.message);
-      alert("Registration failed: " + (err.response?.data?.msg || "Unknown error"));
+      alert(
+        "Registration failed: " +
+          (err.response?.data?.msg || "Unknown server error")
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        minHeight: "6vh",
-        minWidth: "90vw",
-        backgroundImage:
-          "url('https://plus.unsplash.com/premium_photo-1661777196224-bfda51e61cfd?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "400px",
-          width: "50%",
-          margin: "1rem",
-          padding: "1rem",
-        }}
-      >
-        <h2 style={{ textAlign: "center", marginBottom: "1rem", backgroundColor: "white" }}>
-          User Registration
-        </h2>
+    <div className="register-bg">
+      <div className="register-container">
+        <h2 className="register-title">User Registration</h2>
         <form onSubmit={handleSubmit}>
-          <p><input type="text" name="fullname" placeholder="Full Name" value={record.fullname} onChange={handleChange} required style={{ width: "100%", padding: "8px" }} /></p>
-          <p><input type="email" name="email" placeholder="Email" value={record.email} onChange={handleChange} required style={{ width: "100%", padding: "8px" }} /></p>
-          <p><input type="password" name="password" placeholder="Password" value={record.password} onChange={handleChange} required style={{ width: "100%", padding: "8px" }} /></p>
-          <p><input type="password" name="confirmPassword" placeholder="Confirm Password" value={record.confirmPassword} onChange={handleChange} required style={{ width: "100%", padding: "8px" }} /></p>
-          <p><input type="tel" name="phone" placeholder="Phone Number (10 digits)" value={record.phone} onChange={handleChange} required style={{ width: "100%", padding: "8px" }} /></p>
-          <p><input type="number" name="age" placeholder="Age" value={record.age} onChange={handleChange} required style={{ width: "100%", padding: "8px" }} /></p>
-          <p>
-            <select name="gender" value={record.gender} onChange={handleChange} required style={{ width: "100%", padding: "8px", marginTop: "4px" }}>
-              <option value="">--Select Gender--</option>
+          {/* Full Name */}
+          <div className="input-group">
+            <input
+              type="text"
+              name="fullname"
+              className="input"
+              value={record.fullname}
+              onChange={handleChange}
+              required
+            />
+            <label className="user-label">Full Name</label>
+          </div>
+
+          {/* Email */}
+          <div className="input-group">
+            <input
+              type="email"
+              name="email"
+              className="input"
+              value={record.email}
+              onChange={handleChange}
+              required
+            />
+            <label className="user-label">Email</label>
+          </div>
+
+          {/* Password */}
+          <div className="input-group">
+            <input
+              type="password"
+              name="password"
+              className="input"
+              value={record.password}
+              onChange={handleChange}
+              required
+            />
+            <label className="user-label">Password</label>
+          </div>
+
+          {/* Confirm Password */}
+          <div className="input-group">
+            <input
+              type="password"
+              name="confirmPassword"
+              className="input"
+              value={record.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+            <label className="user-label">Confirm Password</label>
+          </div>
+
+          {/* Phone */}
+          <div className="input-group">
+            <input
+              type="tel"
+              name="phone"
+              className="input"
+              value={record.phone}
+              onChange={handleChange}
+              required
+            />
+            <label className="user-label">Phone Number</label>
+          </div>
+
+          {/* Age */}
+          <div className="input-group">
+            <input
+              type="number"
+              name="age"
+              className="input"
+              value={record.age}
+              onChange={handleChange}
+              required
+            />
+            <label className="user-label">Age</label>
+          </div>
+
+          {/* Gender */}
+          <div className="input-group">
+            <select
+              className="input"
+              name="gender"
+              value={record.gender}
+              onChange={handleChange}
+              required
+            >
+              <option value=""></option>
               <option value="female">Female</option>
               <option value="male">Male</option>
               <option value="other">Other</option>
             </select>
-          </p>
-          <p>
-            <select name="role" value={record.role} onChange={handleChange} required style={{ width: "100%", padding: "8px", marginTop: "4px" }}>
-              <option value="">--Select Role--</option>
+            <label className="user-label">Gender</label>
+          </div>
+
+          {/* Role */}
+          <div className="input-group">
+            <select
+              className="input"
+              name="role"
+              value={record.role}
+              onChange={handleChange}
+              required
+            >
+              <option value=""></option>
               <option value="user">User</option>
               <option value="instructor">Instructor</option>
             </select>
-          </p>
+            <label className="user-label">Role</label>
+          </div>
 
+          {/* Experience - only if user */}
           {record.role === "user" && (
-            <p>
-              <select name="experience" value={record.experience} onChange={handleChange} required style={{ width: "100%", padding: "8px", marginTop: "4px" }}>
-                <option value="">--Select Experience--</option>
+            <div className="input-group">
+              <select
+                className="input"
+                name="experience"
+                value={record.experience}
+                onChange={handleChange}
+                required
+              >
+                <option value=""></option>
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
               </select>
-            </p>
+              <label className="user-label">Experience</label>
+            </div>
           )}
 
+          {/* Certificate Upload - only if instructor */}
           {record.role === "instructor" && (
-            <p style={{ display: "flex", flexDirection: "column" }}>
+            <div className="input-group">
               <input
+                className="input"
                 type="file"
                 name="certificate"
                 accept=".pdf,.jpg,.jpeg,.png"
                 onChange={(e) => setCertificate(e.target.files[0])}
                 required
-                style={{ width: "100%", padding: "8px", marginTop: "4px", backgroundColor: "white" }}
               />
-            </p>
+              <label className="user-label">Upload Certificate</label>
+            </div>
           )}
 
-          <p style={{ background: "#fff", padding: "10px", borderRadius: "6px" }}>
-            <label style={{ display: "flex", alignItems: "center" }}>
+          {/* Terms and Conditions */}
+          <p className="terms-box">
+            <label className="terms-label">
               <input
                 type="checkbox"
                 name="agreeTerms"
                 checked={record.agreeTerms}
                 onChange={handleChange}
                 required
-                style={{ marginRight: "8px" }}
-              />
+              />{" "}
               I agree to the terms and conditions
             </label>
           </p>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: "10px",
-              backgroundColor: loading ? "#aaa" : "#007bff",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              fontWeight: "bold",
-              fontSize: "16px",
-              cursor: "pointer",
-              marginTop: "10px"
-            }}
-          >
-            {loading ? "Registering..." : "REGISTER"}
+          {/* Submit */}
+          <button type="submit" disabled={loading} className="cssbuttons-io">
+            <p>{loading ? "Registering..." : "REGISTER"}</p>
           </button>
         </form>
-        <p style={{ textAlign: "center", marginTop: "1rem" }}>
-          <Link to="/" style={{ color: "#007bff", textDecoration: "none" }}>
-            ← Back to Home
-          </Link>
+
+        <p className="register-link">
+          <Link to="/">← Back to Home</Link>
         </p>
       </div>
     </div>

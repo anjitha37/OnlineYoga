@@ -1,101 +1,37 @@
 import React from 'react';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
+import { Nav } from 'react-bootstrap';
+import { FaPlusCircle, FaList, FaCalendarCheck, FaStar, FaMoneyBill, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import './instructorNav.css';
 
-function InstructorNav() {
-  const navbarStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    zIndex: 1050,
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
-    background: 'linear-gradient(to right, rgb(116, 178, 218), rgb(48, 100, 109))',
-    padding: '10px 20px',
-    height: '60px',
-    display: 'grid',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  };
-
-  const containerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 0,
-    width: '100%',
-  };
-
-  const brandStyle = {
-    fontWeight: 'bold',
-    fontSize: '1.4rem',
-    letterSpacing: '1px',
-    color: '#1f1f1f',
-    marginRight: '30px',
-    textDecoration: 'none',
-  };
-
-  const navCollapseStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexGrow: 1,
-  };
-
-  const navGroupStyle = {
-    display: 'flex',
-    gap: '20px',
-    alignItems: 'center',
-  };
-
-  const navLinkStyle = {
-    color: '#f5f5f5',
-    fontWeight: 500,
-    padding: '8px 12px',
-    textDecoration: 'none',
-  };
+export default function InstructorNav() {
+  const instructorId = localStorage.getItem("instructorId");
 
   return (
-    <>
-      <Navbar bg="blue" variant="blue" expand="lg" style={navbarStyle}>
-        <Container style={containerStyle}>
-          <Navbar.Brand href="/instructor/home" style={brandStyle}>
-            YOGA INSTRUCTOR PANEL
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="instructor-navbar-nav" />
-          <Navbar.Collapse id="instructor-navbar-nav" style={navCollapseStyle}>
-            <Nav className="me-auto" style={navGroupStyle}>
-              <Nav.Link href="/instructor/addclasses" style={navLinkStyle}>
-                Add Classes
-              </Nav.Link>
-              <Nav.Link href="/instructor/myclasses" style={navLinkStyle}>
-                My Classes
-              </Nav.Link>
-              <Nav.Link href="/instructor/bookings" style={navLinkStyle}>
-                Manage Bookings
-              </Nav.Link>
-              <Nav.Link href="/instructor/reviews" style={navLinkStyle}>
-              Reviews
-              </Nav.Link>
-              <Nav.Link href={`/instructor/earnings/${localStorage.getItem("instructorId")}`} style={navLinkStyle}>
-              Earnings
-              </Nav.Link>
-            </Nav>
-            <Nav style={navGroupStyle}>
-              <Nav.Link href="/instructor/profile" style={navLinkStyle}>
-                Profile
-              </Nav.Link>
-              <Nav.Link href="/logout" style={navLinkStyle}>
-                Logout
-              </Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-      {/* Padding to prevent overlap with fixed navbar */}
-      <div style={{ paddingTop: '60px' }} />
-    </>
+    <div className="instructor-sidebar">
+      <h5>INSTRUCTOR PANEL</h5>
+      <Nav className="flex-column w-100">
+        <Nav.Link href="/instructor/addclasses" className="instructor-nav-link">
+          <FaPlusCircle className="instructor-nav-icon" /> Add Classes
+        </Nav.Link>
+        <Nav.Link href="/instructor/myclasses" className="instructor-nav-link">
+          <FaList className="instructor-nav-icon" /> My Classes
+        </Nav.Link>
+        <Nav.Link href="/instructor/bookings" className="instructor-nav-link">
+          <FaCalendarCheck className="instructor-nav-icon" /> Manage Bookings
+        </Nav.Link>
+        <Nav.Link href="/instructor/reviews" className="instructor-nav-link">
+          <FaStar className="instructor-nav-icon" /> Reviews
+        </Nav.Link>
+        <Nav.Link href={`/instructor/earnings/${instructorId}`} className="instructor-nav-link">
+          <FaMoneyBill className="instructor-nav-icon" /> Earnings
+        </Nav.Link>
+        <Nav.Link href="/instructor/profile" className="instructor-nav-link">
+          <FaUser className="instructor-nav-icon" /> Profile
+        </Nav.Link>
+        <Nav.Link href="/logout" className="instructor-nav-link">
+          <FaSignOutAlt className="instructor-nav-icon" /> Logout
+        </Nav.Link>
+      </Nav>
+    </div>
   );
 }
-
-export default InstructorNav;

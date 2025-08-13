@@ -1,9 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Form, Button, Table, Alert, Card } from 'react-bootstrap';
 import UserNav from './usernav';
 import { FaStar } from 'react-icons/fa';
+import './UserNav.css';
 
 const MyReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -17,9 +17,10 @@ const MyReviews = () => {
   useEffect(() => {
     const fetchMyReviews = async () => {
       try {
-        const res = await axios.get(`http://localhost:9001/api/user/user/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `http://localhost:9001/api/user/user/${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         setReviews(res.data);
       } catch (err) {
         console.error(err);
@@ -28,28 +29,32 @@ const MyReviews = () => {
 
     const fetchBookedClasses = async () => {
       try {
-        const res = await axios.get(`http://localhost:9001/api/user/bookings/user/${userId}/classes`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `http://localhost:9001/api/user/bookings/user/${userId}/classes`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         setBookedClasses(res.data);
       } catch (err) {
         console.error(err);
       }
     };
 
-    fetchMyReviews();
-    fetchBookedClasses();
+    if (userId && token) {
+      fetchMyReviews();
+      fetchBookedClasses();
+    }
   }, [userId, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.classId || form.rating < 1) {
-      setMessage("Please select a class and provide a rating.");
+      setMessage('Please select a class and provide a rating.');
       return;
     }
 
     try {
-      await axios.post(`http://localhost:9001/api/user/reviews`,
+      await axios.post(
+        `http://localhost:9001/api/user/reviews`,
         { ...form, userId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -62,16 +67,23 @@ const MyReviews = () => {
   };
 
   return (
-    <>
-      <UserNav />
-      <div style={{ background: 'linear-gradient(to right, #f8fafc, #e2e8f0)', minHeight: '100vh', padding: '40px 0' }}>
-        <Container>
-          <Card className="p-4 shadow-sm bg-white rounded mb-5">
+    <div className="user-dashboard-wrapper">
+      {/* Sidebar */}
+      <div className="user-sidebar">
+        <UserNav />
+      </div>
+
+      {/* Main Content */}
+      <div className="user-content" style={{ overflowY: 'auto', padding: '20px' }}>
+        <Container fluid>
+          {/* Review Form */}
+          
             <h3 className="mb-4 text-center">📝 Share Your Review</h3>
 
             {message && <Alert variant="info">{message}</Alert>}
 
             <Form onSubmit={handleSubmit}>
+              {/* Select Class */}
               <Form.Group className="mb-3">
                 <Form.Label><strong>Select Class</strong></Form.Label>
                 <Form.Select
@@ -88,6 +100,8 @@ const MyReviews = () => {
                 </Form.Select>
               </Form.Group>
 
+              {/* Star Rating */}
+              <Card className="p-4 shadow-sm bg-white rounded mb-5">
               <Form.Group className="mb-3">
                 <Form.Label><strong>Rating</strong></Form.Label>
                 <div style={{ fontSize: '1.8rem' }}>
@@ -98,12 +112,18 @@ const MyReviews = () => {
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(null)}
                       color={(hoverRating || form.rating) >= star ? '#ffc107' : '#e4e5e9'}
-                      style={{ cursor: 'pointer', marginRight: 5, transition: 'color 0.2s ease-in-out' }}
+                      style={{
+                        cursor: 'pointer',
+                        marginRight: 5,
+                        transition: 'color 0.2s ease-in-out'
+                      }}
                     />
                   ))}
                 </div>
               </Form.Group>
+              </Card>
 
+              {/* Comment Field */}
               <Form.Group className="mb-3">
                 <Form.Label><strong>Comment</strong></Form.Label>
                 <Form.Control
@@ -119,8 +139,9 @@ const MyReviews = () => {
                 <Button variant="success" type="submit">Submit Review</Button>
               </div>
             </Form>
-          </Card>
+        
 
+          {/* Submitted Reviews */}
           <Card className="p-4 shadow-sm bg-white rounded">
             <h5 className="mb-3 text-center">⭐ Your Submitted Reviews</h5>
             {reviews.length === 0 ? (
@@ -155,7 +176,7 @@ const MyReviews = () => {
           </Card>
         </Container>
       </div>
-    </>
+    </div>
   );
 };
 

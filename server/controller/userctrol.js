@@ -7,7 +7,9 @@ const path = require('path');
 const fs = require('fs');
 const Booking = require('../model/bookingmodel');
 const mongoose = require("mongoose");
-const Review = require('../model/reviewmodel')
+const Review = require('../model/reviewmodel');
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 // Set up Multer
 const storage = multer.diskStorage({
@@ -113,7 +115,7 @@ const loginUser = async (req, res) => {
   "jwtsecretkey123",
   { expiresIn: "10d" }
 );
-
+ 
 
     res.status(200).json({
       status:200,
@@ -132,6 +134,71 @@ const loginUser = async (req, res) => {
     res.status(500).json({ msg: "Internal Server Error" });
   }
 };
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ msg: "No user found with this email" });
+
+    // Create token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExpiry = Date.now() + 1000 * 60 * 15; // 15 min expiry
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpiry = resetTokenExpiry;
+    await user.save();
+
+    // Send email
+    const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
+  }
+});
+
+
+  
+  const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    await transporter.sendMail({
+      from: "Your App <yourgmail@gmail.com>",
+      to: user.email,
+      subject: "Password Reset Request",
+      html: `<p>Click <a href="${resetUrl}">here</a> to reset your password. This link will expire in 15 minutes.</p>`
+    });
+
+    res.json({ msg: "Password reset link sent to email" });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpiry: { $gt: Date.now() }
+    });
+
+    if (!user) return res.status(400).json({ msg: "Invalid or expired token" });
+
+    user.password = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiry = undefined;
+    await user.save();
+
+    res.json({ msg: "Password reset successful" });
+  } catch (err) {
+    console.error("Reset password error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
 
 // GET: Fetch all classes for users
 const getAllClasses = async (req, res) => {
@@ -153,16 +220,25 @@ const getAllClasses = async (req, res) => {
 const getClassById = async (req, res) => {
   try {
     const classId = req.params.id;
-    const yogaClass = await Class.findById(classId);
+
+    const yogaClass = await Class.findById(classId).populate('instructorId', 'fullname');
+
     if (!yogaClass) {
       return res.status(404).json({ msg: "Class not found" });
     }
-    res.status(200).json(yogaClass);
+
+    const response = {
+      ...yogaClass.toObject(),
+      instructorName: yogaClass.instructorId?.fullname || "Unknown",
+    };
+
+    res.status(200).json(response);
   } catch (err) {
     console.error("Error fetching class:", err);
     res.status(500).json({ msg: "Error fetching class" });
   }
 };
+
 
 
 const createBooking = async (req, res) => {
@@ -312,4 +388,4 @@ const getBookedClassesForReview = async (req, res) => {
 };
 
 
-module.exports={registerUser, loginUser, getAllClasses,getClassById, upload, createBooking,getUserBookings,cancelBooking, getUserProfile, createReview,getReviewsByUser,getBookedClassesForReview}
+module.exports={registerUser, loginUser, getAllClasses,getClassById, upload, createBooking,getUserBookings,cancelBooking, getUserProfile, createReview,getReviewsByUser,getBookedClassesForReview,forgotPassword,resetPassword}

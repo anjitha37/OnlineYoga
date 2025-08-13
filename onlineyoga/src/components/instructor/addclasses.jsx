@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import InstructorNav from './instructornav';
 import { Form, Button, Container, Card } from 'react-bootstrap';
 import axios from 'axios';
+import './instructorNav.css'; // ✅ to get sidebar + content styling
 
 export default function AddClasses() {
   const [formData, setFormData] = useState({
@@ -74,25 +74,19 @@ export default function AddClasses() {
   };
 
   return (
-    <>
+    <div className="instructor-dashboard-wrapper">
+      {/* Sidebar */}
       <InstructorNav />
-      <div
-        style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #e0f7fa, #fff)',
-          paddingTop: '60px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start'
-        }}
-      >
-        <Container style={{ maxWidth: '720px' }}>
+
+      {/* Main Content */}
+      <div className="instructor-content">
+        <Container style={{ maxWidth: '720px', padding: '40px 20px' }}>
           <Card
             className="shadow-lg p-4"
             style={{
               borderRadius: '20px',
               backdropFilter: 'blur(10px)',
-              backgroundColor: 'rgba(255, 255, 255, 0.85)',
+              backgroundColor: 'rgba(255, 255, 255, 0.88)',
               boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
             }}
           >
@@ -185,6 +179,6 @@ export default function AddClasses() {
           </Card>
         </Container>
       </div>
-    </>
+    </div>
   );
 }

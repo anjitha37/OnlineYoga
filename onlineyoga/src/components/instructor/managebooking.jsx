@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table, Container, Button, Badge, Card } from 'react-bootstrap';
 import InstructorNav from './instructornav';
-// import './ManageBookings.css'; // Optional for external styling (see bottom)
+import './instructorNav.css'; 
 
 const ManageBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -16,13 +15,15 @@ const ManageBookings = () => {
       return;
     }
     fetchBookings(id);
+    // eslint-disable-next-line
   }, []);
 
   const fetchBookings = async (instructorId) => {
     try {
-      const res = await axios.get(`http://localhost:9001/api/instructor/bookings?instructorId=${instructorId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `http://localhost:9001/api/instructor/bookings?instructorId=${instructorId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setBookings(res.data);
     } catch (error) {
       console.error('Failed to fetch bookings:', error);
@@ -33,9 +34,11 @@ const ManageBookings = () => {
   const handleCancelBooking = async (bookingId) => {
     if (!window.confirm("Are you sure you want to cancel this booking?")) return;
     try {
-      await axios.patch(`http://localhost:9001/api/instructor/bookings/cancel/${bookingId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.patch(
+        `http://localhost:9001/api/instructor/bookings/cancel/${bookingId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert("Booking cancelled");
       fetchBookings(localStorage.getItem("instructorId"));
     } catch (err) {
@@ -60,11 +63,14 @@ const ManageBookings = () => {
   };
 
   return (
-    <>
+    <div className="instructor-dashboard-wrapper">
       <InstructorNav />
-      <div className="booking-page-background">
-        <Container className="pt-5 pb-5">
-          <Card className="shadow-lg p-4 border-0 rounded-4 glass-card">
+      <div className="instructor-content">
+        <Container style={{ maxWidth: '1200px', padding: '40px 20px' }}>
+          <Card className="shadow-lg p-4 border-0 rounded-4 glass-card" style={{
+            backgroundColor: 'rgba(255,255,255,0.92)',
+            backdropFilter: 'blur(8px)'
+          }}>
             <h3 className="text-center text-primary fw-bold mb-4">📋 Manage Bookings</h3>
             {bookings.length === 0 ? (
               <p className="text-center text-muted">No bookings found.</p>
@@ -91,12 +97,12 @@ const ManageBookings = () => {
                       <td>{booking.class?.time || "N/A"}</td>
                       <td>
                         <Badge bg={
-                          booking.status === 'cancelled' ? 'danger' :
-                            booking.status === 'pending' ? 'warning' :
-                              booking.status === 'rejected' ? 'secondary' :
-                                'success'
+                          booking.status === 'cancelled' ? 'danger'
+                          : booking.status === 'pending' ? 'warning'
+                          : booking.status === 'rejected' ? 'secondary'
+                          : 'success'
                         }>
-                          {booking.status}
+                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                         </Badge>
                       </td>
                       <td>
@@ -137,7 +143,7 @@ const ManageBookings = () => {
           </Card>
         </Container>
       </div>
-    </>
+    </div>
   );
 };
 

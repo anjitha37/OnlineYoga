@@ -1,0 +1,140 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Wrapper layout */
+.instructor-dashboard-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.instructor-sidebar {
+  width: 220px;
+  background: linear-gradient(to bottom, #b64113, #55c0d3);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  height: 100vh;
+  padding-top: 20px;
+}
+
+.instructor-sidebar h5 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: white;
+}
+
+.instructor-nav-link {
+  color: #fff !important;
+  font-weight: 500;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  width: 100%;
+  transition: background 0.3s;
+}
+
+.instructor-nav-link:hover {
+  background-color: rgba(255,255,255,0.12);
+  color: #f0f0f0 !important;
+}
+
+.instructor-nav-icon {
+  margin-right: 10px;
+}
+
+/* Main content area */
+.instructor-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+   background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=100&dpr=2'); 
+
+}
+
+/* Hero section */
+.instructor-home-hero {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+}
+
+.hero-inner {
+  background-color: rgba(255,255,255,0.85);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.hero-inner h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.hero-inner p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+/* Responsive sidebar */
+@media (max-width: 768px) {
+  .instructor-sidebar {
+    width: 100px;
+    min-width: 100px;
+    padding-top: 10px;
+  }
+  .instructor-nav-link {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+  .instructor-nav-icon {
+    margin-right: 5px;
+  }
+  .hero-inner {
+    padding: 20px;
+    max-width: 98vw;
+  }
+}
+
+@media (max-width: 500px) {
+  .instructor-dashboard-wrapper {
+    flex-direction: column;
+  }
+  .instructor-sidebar {
+    width: 100vw;
+    min-width: 0;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 10px;
+  }
+  .instructor-nav-link {
+    justify-content: center;
+  }
+  .instructor-content {
+    padding: 8px;
+  }
+  .hero-inner {
+    padding: 10px;
+  }
+}

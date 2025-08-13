@@ -1,52 +1,39 @@
 import React from 'react';
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
+import { FaHome, FaChalkboardTeacher, FaBook, FaStar, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import './UserNav.css'; // Correctly imported new CSS file
 
 function UserNav() {
-  const navbarStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    zIndex: 1050,
-    background: 'linear-gradient(to right,rgb(228, 140, 99), #307C85)',
-    boxShadow: '0 4px 10px rgba(230, 51, 140, 0.2)',
-    height: '60px',
-    display: 'grid',
-    alignItems: 'center',
-  };
-
-  const navLinkStyle = {
-    color: '#fff',
-    fontWeight: 500,
-    padding: '8px 12px',
-    textDecoration: 'none',
-  };
-
   return (
     <>
-      <Navbar expand="lg" style={navbarStyle}>
-        <Container>
-          <Navbar.Brand href="/user/home" style={{ color: "#fff", fontWeight: "bold" }}>
-            YOGA USER DASHBOARD
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="user-navbar-nav" />
-          <Navbar.Collapse id="user-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="/user/classes" style={navLinkStyle}>View Classes</Nav.Link>
-              {/* <Nav.Link href="/user/live" style={navLinkStyle}>Live Classes</Nav.Link> */}
-              {/* <Nav.Link href="/user/videos" style={navLinkStyle}>On-Demand Videos</Nav.Link> */}
-              <Nav.Link href="/user/bookings" style={navLinkStyle}>My Bookings</Nav.Link>
-              <Nav.Link href="/user/reviews" style={navLinkStyle}>My Reviews</Nav.Link>
-            </Nav>
-            <Nav>
-              <Nav.Link href="/user/profile" style={navLinkStyle}>Profile</Nav.Link>
-              <Nav.Link href="/logout" style={navLinkStyle}>Logout</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-      {/* Prevent content overlap */}
-      <div style={{ paddingTop: '60px' }} />
+      <div className="user-sidebar">
+        <h5>USER DASHBOARD</h5>
+        <Nav defaultActiveKey="/userhome" className="flex-column">
+          <Nav.Link href="/userhome" className="user-nav-link">
+            <FaHome className="user-nav-icon" /> Home
+          </Nav.Link>
+          <Nav.Link href="/user/classes" className="user-nav-link">
+            <FaChalkboardTeacher className="user-nav-icon" /> View Classes
+          </Nav.Link>
+          <Nav.Link href="/user/bookings" className="user-nav-link">
+            <FaBook className="user-nav-icon" /> My Bookings
+          </Nav.Link>
+          <Nav.Link href="/user/reviews" className="user-nav-link">
+            <FaStar className="user-nav-icon" /> My Reviews
+          </Nav.Link>
+          <Nav.Link href="/user/profile" className="user-nav-link">
+            <FaUser className="user-nav-icon" /> Profile
+          </Nav.Link>
+          <Nav.Link href="/logout" className="user-nav-link">
+            <FaSignOutAlt className="user-nav-icon" /> Logout
+          </Nav.Link>
+        </Nav>
+      </div>
+
+      {/* Content padding */}
+      <div className="user-content">
+        {/* Your page content will go here */}
+      </div>
     </>
   );
 }

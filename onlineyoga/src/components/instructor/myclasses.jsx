@@ -1,9 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table, Button, Container, Badge, Card } from 'react-bootstrap';
 import InstructorNav from './instructornav';
 import { useNavigate } from 'react-router-dom';
+import './instructorNav.css';
 
 const MyClasses = () => {
   const [classes, setClasses] = useState([]);
@@ -32,18 +32,14 @@ const MyClasses = () => {
   };
 
   return (
-    <>
+    <div className="instructor-dashboard-wrapper">
       <InstructorNav />
-      <div
-        style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(to right, #e0f7fa, #f1f8e9)',
-          paddingTop: '60px',
-          paddingBottom: '40px'
-        }}
-      >
-        <Container>
-          <Card className="shadow-lg p-4 border-0" style={{ borderRadius: '20px' }}>
+      <div className="instructor-content">
+        <Container style={{ maxWidth: '1200px', padding: '40px 20px' }}>
+          <Card className="shadow-lg p-4 border-0 rounded-4 glass-card" style={{
+            backgroundColor: 'rgba(255,255,255,0.92)',
+            backdropFilter: 'blur(8px)'
+          }}>
             <h3 className="text-center mb-4 text-primary fw-bold">📚 My Yoga Classes</h3>
             {classes.length === 0 ? (
               <p className="text-center text-muted">You haven't added any classes yet.</p>
@@ -88,7 +84,7 @@ const MyClasses = () => {
           </Card>
         </Container>
       </div>
-    </>
+    </div>
   );
 };
 

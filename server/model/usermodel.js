@@ -15,16 +15,16 @@ const userSchema = new mongoose.Schema({
   experience: { 
     type: String, 
     enum: ["beginner", "intermediate", "advanced"], 
-    required: function() { return this.role === "user"; } // ✅ Conditional requirement
+    required: function() { return this.role === "user"; }
   },
   role: { 
     type: String, 
     enum: ["user", "instructor"], 
     required: [true, "Role is required"] 
   },
-  certificate: { 
+  certificate: {   
     type: String, 
-    required: function() { return this.role === "instructor"; } // ✅ Conditional requirement
+    required: function() { return this.role === "instructor"; }
   },
   agreeTerms: { 
     type: Boolean, 
@@ -36,8 +36,13 @@ const userSchema = new mongoose.Schema({
   },
   isApproved: { 
     type: Boolean, 
-    default: function() { return this.role !== "instructor"; } // Auto-set based on role
-  }
+    default: function() { return this.role !== "instructor"; }
+  },
+
+  // 🔹 Fields for Forgot/Reset Password
+  resetPasswordToken: { type: String },
+  resetPasswordExpiry: { type: Date }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
