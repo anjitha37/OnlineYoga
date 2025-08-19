@@ -10,7 +10,6 @@ const adminRouter = require('./routes/adminrouter');
 const instructorRouter = require('./routes/instructorrouter');
 const bookingRouter = require('./routes/bookingrouter');
 const paymentRoutes = require('./routes/paymentRoutes');
-const { Routes } = require('react-router-dom');
 require('dotenv').config();
 
 // ✅ CORS setup with multiple origins
