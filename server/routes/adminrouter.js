@@ -4,7 +4,7 @@ const router = express.Router();
 const { getAllUsers, deleteUser, getUserById , approveUser, getAdminProfile, getReports} = require("../controller/Adminctrol");
 
 // GET all users for admin
-router.get("/users", getAllUsers)
+router.get("/users", getAllUsers);
 
 // GET user by ID
 router.get("/users/:id", getUserById);

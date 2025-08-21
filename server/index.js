@@ -17,7 +17,8 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174'
+  'http://127.0.0.1:5174',
+  
 ];
 
 
@@ -42,13 +43,6 @@ app.use(express.json());
 // ✅ Static folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve frontend static files
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Handle frontend routing, serve index.html for all unhandled routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // ✅ Connect to MongoDB
 const dbConnect = async () => {

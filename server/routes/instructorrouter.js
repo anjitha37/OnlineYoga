@@ -14,7 +14,7 @@ router.get('/myclasses',verifyInstructor,getInstructorClasses);
 router.put('/updateclass/:id', verifyInstructor, updateClass);
 router.put('/bookings/respond/:bookingId',verifyInstructor,respondToBooking);
 router.get('/earnings/:id',verifyInstructor,getInstructorEarnings);
-router.get('/reviews/:instructorId',verifyInstructor,getReviewsForInstructor)
-router.post('/reviews/reply/:reviewId',verifyInstructor,replyToReview)
+router.get('/reviews/:instructorId',verifyInstructor,getReviewsForInstructor);
+router.post('/reviews/reply/:reviewId',verifyInstructor,replyToReview);
 
 module.exports = router;
