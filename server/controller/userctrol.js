@@ -88,52 +88,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// const loginUser = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     // Check if user exists
-//     const loggedUser = await User.findOne({ email: email });
-
-//     if (!loggedUser) {
-//       return res.status(400).json({ msg: "User not found" });
-//     }
-
-//     // Compare entered password with hashed password
-//     const isMatch = await bcrypt.compare(password, loggedUser.password);
-//     if (!isMatch) {
-//       return res.status(400).json({ msg: "Incorrect password" });
-//     }
-     
-//      if (loggedUser.role === 'instructor' && !loggedUser.isApproved) {
-//       return res.status(403).json({ msg: "Instructor account pending approval by admin." });
-//     }
-
-//     // Create JWT token
-//    const token = jwt.sign(
-//   { id: loggedUser._id, role: loggedUser.role.charAt(0).toUpperCase() + loggedUser.role.slice(1).toLowerCase() },
-//   "jwtsecretkey123",
-//   { expiresIn: "10d" }
-// );
- 
-
-//     res.status(200).json({
-//       status:200,
-//       msg: "User Logged In Successfully",
-//       token: token,
-//       user: {
-//         id: loggedUser._id,
-//         _id: loggedUser._id,
-//         fullname: loggedUser.fullname,
-//         email: loggedUser.email,
-//         role: loggedUser.role,
-//       },
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ msg: "Internal Server Error" });
-//   }
-// };
 
 
 const loginUser = async (req, res) => {

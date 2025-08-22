@@ -35,20 +35,6 @@ app.use(express.json());
 // ✅ Serve static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ MongoDB connection
-const dbConnect = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
-    console.log("Database connected successfully");
-  } catch (err) {
-    console.log("Error occurred", err);
-  }
-};
-dbConnect();
-
 // ✅ API routes
 app.use('/api/user', userRouter);
 app.use('/api/admin', adminRouter);
@@ -56,8 +42,36 @@ app.use('/api/instructor', instructorRouter);
 app.use('/api/bookings', bookingRouter);
 app.use('/api/payment', paymentRoutes);
 
-// ✅ Start server on specified port or 9001
-const PORT = process.env.PORT || 9001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// ✅ Centralized error handler (optional but recommended)
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || 'Internal Server Error'
+  });
 });
+
+// ✅ Start server after DB connection is established
+const PORT = process.env.PORT || 9001;
+
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 10000, // Try for 10 seconds
+      socketTimeoutMS: 45000 // Disconnect after 45 seconds of inactivity
+    });
+    console.log("Database connected successfully");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+  } catch (err) {
+    console.error("Database connection error:", err);
+    process.exit(1); // Stop the server if DB fails to connect
+  }
+};
+
+startServer();
