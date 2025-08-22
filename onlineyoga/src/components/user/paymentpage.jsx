@@ -51,7 +51,7 @@ const PaymentPage = () => {
       const order = orderResponse.data;
 
       const options = {
-        key: 'rzp_test_ZvPDDKTI4kSjSC', // Replace with your Razorpay Test Key
+        key: 'rzp_live_R8HFBzZNqUikye', 
         amount: order.amount,
         currency: order.currency,
         name: 'Online Yoga Class',
