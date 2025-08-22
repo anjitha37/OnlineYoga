@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Table, Container, Button, Badge, Card } from 'react-bootstrap';
 import InstructorNav from './instructornav';
+import { StoreContext } from '../../context/StoreContext'; // ✅ import
 import './instructorNav.css'; 
 
 const ManageBookings = () => {
   const [bookings, setBookings] = useState([]);
+  const { url } = useContext(StoreContext); // ✅ get url
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -21,7 +23,7 @@ const ManageBookings = () => {
   const fetchBookings = async (instructorId) => {
     try {
       const res = await axios.get(
-        `http://localhost:9001/api/instructor/bookings?instructorId=${instructorId}`,
+        `${url}/api/instructor/bookings?instructorId=${instructorId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setBookings(res.data);
@@ -35,7 +37,7 @@ const ManageBookings = () => {
     if (!window.confirm("Are you sure you want to cancel this booking?")) return;
     try {
       await axios.patch(
-        `http://localhost:9001/api/instructor/bookings/cancel/${bookingId}`,
+        `${url}/api/instructor/bookings/cancel/${bookingId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -50,7 +52,7 @@ const ManageBookings = () => {
   const handleRespondToBooking = async (bookingId, action) => {
     try {
       await axios.put(
-        `http://localhost:9001/api/instructor/bookings/respond/${bookingId}`,
+        `${url}/api/instructor/bookings/respond/${bookingId}`,
         { action },
         { headers: { Authorization: `Bearer ${token}` } }
       );

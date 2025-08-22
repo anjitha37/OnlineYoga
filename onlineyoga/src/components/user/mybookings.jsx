@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Table, Button, Container, Badge, Spinner } from 'react-bootstrap';
 import UserNav from './usernav';
+import { StoreContext } from '../../context/StoreContext';
 import './UserNav.css';
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem("userId");
+  const { url } = useContext(StoreContext);
 
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:9001/api/user/bookings/${userId}`);
+      const res = await axios.get(`${url}/api/user/bookings/${userId}`);
       setBookings(res.data);
     } catch (err) {
       console.error("Error fetching bookings", err);
@@ -22,12 +24,11 @@ const MyBookings = () => {
   };
 
   const cancelBooking = async (bookingId) => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel this booking?");
-    if (!confirmCancel) return;
+    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
 
     try {
-      await axios.put(`http://localhost:9001/api/user/cancel/${bookingId}`);
-      fetchBookings(); // Refresh bookings
+      await axios.put(`${url}/api/user/cancel/${bookingId}`);
+      fetchBookings();
     } catch (err) {
       console.error("Error cancelling", err);
     }
@@ -48,25 +49,19 @@ const MyBookings = () => {
 
   return (
     <div className="user-dashboard-wrapper">
-      {/* Sidebar */}
       <div className="user-sidebar">
         <UserNav />
       </div>
-
-      {/* Main Content */}
       <div className="user-content">
-        <Container fluid style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
-          <h3 className="mb-4 mt-0">📅 My Bookings</h3>
-
+        <Container fluid style={{ padding: '20px' }}>
+          <h3 className="mb-4">📅 My Bookings</h3>
           {loading ? (
             <div className="text-center my-5">
               <Spinner animation="border" variant="primary" />
               <div>Loading bookings...</div>
             </div>
           ) : bookings.length === 0 ? (
-            <div className="text-center text-muted mt-4">
-              You have no bookings yet.
-            </div>
+            <div className="text-center text-muted">You have no bookings yet.</div>
           ) : (
             <Table striped bordered hover responsive>
               <thead>
@@ -87,27 +82,15 @@ const MyBookings = () => {
                     <td>{booking.class?.date ? new Date(booking.class.date).toLocaleDateString('en-IN') : ''}</td>
                     <td>{booking.class?.time}</td>
                     <td>{booking.class?.price ? `₹${booking.class.price}` : ''}</td>
-                    <td>
-                      <Badge bg={getBadgeVariant(booking.status)}>{booking.status}</Badge>
-                    </td>
+                    <td><Badge bg={getBadgeVariant(booking.status)}>{booking.status}</Badge></td>
                     <td>
                       {booking.status?.toLowerCase() === 'confirmed' && booking.class?.meetingLink ? (
-                        <a href={booking.class.meetingLink} target="_blank" rel="noopener noreferrer">
-                          Join Class
-                        </a>
-                      ) : (
-                        '—'
-                      )}
+                        <a href={booking.class.meetingLink} target="_blank" rel="noopener noreferrer">Join Class</a>
+                      ) : '—'}
                     </td>
                     <td>
                       {booking.status?.toLowerCase() === 'confirmed' && (
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => cancelBooking(booking._id)}
-                        >
-                          Cancel
-                        </Button>
+                        <Button variant="danger" size="sm" onClick={() => cancelBooking(booking._id)}>Cancel</Button>
                       )}
                     </td>
                   </tr>

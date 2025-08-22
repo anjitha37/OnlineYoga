@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import AXIOS from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { StoreContext } from "../context/StoreContext"; // adjust path if needed
 
 export default function Register() {
+  const { url } = useContext(StoreContext); // ✅ backend API url
   const [record, setRecord] = useState({
     fullname: "",
     email: "",
@@ -33,7 +35,11 @@ export default function Register() {
       alert("Full Name should contain alphabets and spaces only.");
       return false;
     }
-    if (!record.email.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)) {
+    if (
+      !record.email.match(
+        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+      )
+    ) {
       alert("Enter a valid email.");
       return false;
     }
@@ -95,7 +101,7 @@ export default function Register() {
     }
 
     try {
-      await AXIOS.post("http://localhost:9001/api/user/registeruser", formData, {
+      await AXIOS.post(`${url}/api/user/registeruser`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("User Registered Successfully");

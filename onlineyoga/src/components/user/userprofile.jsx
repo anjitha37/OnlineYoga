@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Card, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { FaUserCircle } from 'react-icons/fa';
 import UserNav from './usernav';
 import './UserNav.css';
+import { StoreContext } from '../../context/StoreContext';  // ✅ Import StoreContext
 
 const UserProfile = () => {
+  const { url } = useContext(StoreContext);  // ✅ Use API base URL from context
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,9 +27,8 @@ const UserProfile = () => {
           return;
         }
 
-        const response = await axios.get(
-          `http://localhost:9001/api/user/profile/${userId}`
-        );
+        // ✅ API call using context base URL
+        const response = await axios.get(`${url}/api/user/profile/${userId}`);
         setUser(response.data);
         setError(null);
       } catch (err) {
@@ -50,7 +51,7 @@ const UserProfile = () => {
     };
 
     fetchUserProfile();
-  }, []);
+  }, [url]);
 
   return (
     <div className="user-dashboard-wrapper">

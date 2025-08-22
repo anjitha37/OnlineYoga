@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Card } from 'react-bootstrap';
 import axios from 'axios';
 import { FaUserTie } from 'react-icons/fa';
 import InstructorNav from './instructornav';
-import './instructorNav.css'; 
+import './instructorNav.css';
+import { StoreContext } from "../../context/StoreContext"; // ✅ import
 
 const InstructorProfile = () => {
+  const { url } = useContext(StoreContext); // ✅
   const [instructor, setInstructor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,36 +15,20 @@ const InstructorProfile = () => {
   useEffect(() => {
     const fetchInstructorProfile = async () => {
       try {
-        const instructorId = localStorage.getItem("userId"); // ID is saved as userId
-        if (!instructorId) {
-          setError("No instructor ID found. Please log in again.");
-          setLoading(false);
-          return;
-        }
-        if (instructorId.length < 24) {
-          setError("Invalid instructor ID format.");
-          setLoading(false);
-          return;
-        }
+        const instructorId = localStorage.getItem("userId");
+        if (!instructorId) return setError("No instructor ID found. Please log in again.");
+        if (instructorId.length < 24) return setError("Invalid instructor ID format.");
 
-        const response = await axios.get(`http://localhost:9001/api/user/profile/${instructorId}`);
+        const response = await axios.get(`${url}/api/user/profile/${instructorId}`);
         setInstructor(response.data);
-        setError(null);
       } catch (err) {
-        if (err.response) {
-          setError(`Server error: ${err.response.data.message || err.response.data.msg || 'Unknown error'}`);
-        } else if (err.request) {
-          setError("No response from server. Please check if the server is running.");
-        } else {
-          setError(`Request error: ${err.message}`);
-        }
+        setError("Failed to fetch instructor profile");
       } finally {
         setLoading(false);
       }
     };
-
     fetchInstructorProfile();
-  }, []);
+  }, [url]);
 
   return (
     <div className="instructor-dashboard-wrapper">

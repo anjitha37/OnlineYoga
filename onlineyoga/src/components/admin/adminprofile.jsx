@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Card, Spinner, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { FaUserCircle } from 'react-icons/fa';
 import AdminNavbar from './adminnav';
+import { StoreContext } from '../../context/StoreContext';  // ✅ Import context
 import './adminNav.css';
 
 const AdminProfile = () => {
+  const { url } = useContext(StoreContext); // ✅ get backend URL from context
   const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     axios
-      .get(`http://localhost:9001/api/admin/profile`)
+      .get(`${url}/api/admin/profile`) // ✅ using context URL
       .then((res) => {
         setAdmin(res.data);
         setLoading(false);
@@ -22,7 +24,7 @@ const AdminProfile = () => {
         setError("Failed to load admin profile");
         setLoading(false);
       });
-  }, []);
+  }, [url]);
 
   return (
     <div className="admin-dashboard-wrapper">

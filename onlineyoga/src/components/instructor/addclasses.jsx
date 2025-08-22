@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import InstructorNav from './instructornav';
 import { Form, Button, Container, Card } from 'react-bootstrap';
 import axios from 'axios';
-import './instructorNav.css'; // ✅ to get sidebar + content styling
+import './instructorNav.css';
+import { StoreContext } from "../../context/StoreContext"; // ✅ import StoreContext
 
 export default function AddClasses() {
+  const { url } = useContext(StoreContext); // ✅ get backend url
+
   const [formData, setFormData] = useState({
     className: '',
     date: '',
@@ -17,56 +20,18 @@ export default function AddClasses() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const validate = () => {
-    if (!formData.className.trim()) return "Class name is required";
-    if (!formData.date) return "Date is required";
-    if (!formData.time) return "Time is required";
-    if (!formData.duration || Number(formData.duration) <= 0) return "Duration must be positive";
-    if (!formData.description.trim()) return "Description is required";
-    if (!formData.price || Number(formData.price) <= 0) return "Price must be greater than 0";
-    if (formData.meetingLink) {
-      const urlPattern = /^(https?:\/\/)?(meet\.google\.com|zoom\.us|[\w-]+\.[\w.-]+)(\/\S*)?$/;
-      if (!urlPattern.test(formData.meetingLink)) {
-        return "Please enter a valid Zoom or Google Meet URL";
-      }
-    }
-    return null;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const error = validate();
-    if (error) {
-      alert(error);
-      return;
-    }
     try {
       const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:9001/api/instructor/addclass',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      alert('Class added successfully!');
-      setFormData({
-        className: '',
-        date: '',
-        time: '',
-        duration: '',
-        description: '',
-        price: '',
-        meetingLink: ''
+      await axios.post(`${url}/api/instructor/addclass`, formData, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      alert('Class added successfully!');
+      setFormData({ className: '', date: '', time: '', duration: '', description: '', price: '', meetingLink: '' });
     } catch (error) {
       console.error('Failed to add class:', error);
       alert(error.response?.data?.msg || 'Failed to add class');

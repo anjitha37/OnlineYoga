@@ -1,19 +1,23 @@
 
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Card, Button, Spinner, Alert } from 'react-bootstrap';
 import { FaUser, FaCalendarAlt, FaClock, FaRupeeSign } from 'react-icons/fa';
 import moment from 'moment';
 import UserNav from './usernav';
+import { StoreContext } from '../../context/StoreContext';  // ✅ Import StoreContext
 
 const PaymentPage = () => {
   const { classId } = useParams();
+  const { url } = useContext(StoreContext);  // ✅ Use base URL from context
   const [classInfo, setClassInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Load Razorpay script
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -21,12 +25,14 @@ const PaymentPage = () => {
     document.body.appendChild(script);
   }, []);
 
+  // Fetch class details
   useEffect(() => {
     const fetchClassInfo = async () => {
       try {
-        const response = await axios.get(`http://localhost:9001/api/user/classes/${classId}`);
+        const response = await axios.get(`${url}/api/user/classes/${classId}`);
         setClassInfo(response.data);
       } catch (err) {
+        console.error("Error fetching class info:", err);
         setError('Failed to load class details.');
       } finally {
         setLoading(false);
@@ -34,8 +40,9 @@ const PaymentPage = () => {
     };
 
     fetchClassInfo();
-  }, [classId]);
+  }, [classId, url]);
 
+  // Handle Payment
   const handlePayment = async () => {
     const userId = localStorage.getItem('userId');
     if (!userId) {
@@ -44,8 +51,8 @@ const PaymentPage = () => {
     }
 
     try {
-      const orderResponse = await axios.post('http://localhost:9001/api/payment/create-order', {
-        amount: 10,
+      const orderResponse = await axios.post(`${url}/api/payment/create-order`, {
+        amount: classInfo.price * 100, // amount in paise for Razorpay
       });
 
       const order = orderResponse.data;
@@ -59,7 +66,7 @@ const PaymentPage = () => {
         order_id: order.id,
         handler: async function (response) {
           try {
-            await axios.post('http://localhost:9001/api/user/bookings/book', {
+            await axios.post(`${url}/api/user/bookings/book`, {
               userId,
               classId,
             });
@@ -75,9 +82,7 @@ const PaymentPage = () => {
           email: 'user@example.com',
           contact: '9999999999',
         },
-        theme: {
-          color: '#28a745',
-        },
+        theme: { color: '#28a745' },
       };
 
       const rzp = new window.Razorpay(options);
@@ -90,42 +95,41 @@ const PaymentPage = () => {
 
   return (
     <>
-    <UserNav />
-    <div className="user-content">
-    <Container className="my-5">
-      {loading ? (
-        <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-        </div>
-      ) : error ? (
-        <Alert variant="danger">{error}</Alert>
-      ) : (
-        <Card className="p-4 shadow">
-          <h3 className="mb-4 text-center">Pay for Your Yoga Session</h3>
+      <UserNav />
+      <div className="user-content">
+        <Container className="my-5">
+          {loading ? (
+            <div className="text-center">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : error ? (
+            <Alert variant="danger">{error}</Alert>
+          ) : (
+            <Card className="p-4 shadow">
+              <h3 className="mb-4 text-center">Pay for Your Yoga Session</h3>
 
-          <p><FaUser /> <strong>Instructor:</strong> {classInfo?.instructorName || 'N/A'}</p>
+              <p><FaUser /> <strong>Instructor:</strong> {classInfo?.instructorName || 'N/A'}</p>
 
-          <p>
-            <FaCalendarAlt /> <strong>Date:</strong>{' '}
-            {classInfo.date ? moment(classInfo.date).format('YYYY-MM-DD') : 'N/A'}
-          </p>
+              <p>
+                <FaCalendarAlt /> <strong>Date:</strong>{' '}
+                {classInfo.date ? moment(classInfo.date).format('YYYY-MM-DD') : 'N/A'}
+              </p>
 
-          <p><FaClock /> <strong>Time:</strong> {classInfo.time}</p>
+              <p><FaClock /> <strong>Time:</strong> {classInfo.time}</p>
 
-          <p><FaRupeeSign /> <strong>Amount:</strong> ₹{classInfo.price}</p>
+              <p><FaRupeeSign /> <strong>Amount:</strong> ₹{classInfo.price}</p>
 
-          <div className="d-grid mt-4">
-            <Button onClick={handlePayment} variant="success" size="lg">
-              💳 Pay ₹{classInfo.price} Now
-            </Button>
-          </div>
-        </Card>
-      )}
-    </Container>
-    </div>
+              <div className="d-grid mt-4">
+                <Button onClick={handlePayment} variant="success" size="lg">
+                  💳 Pay ₹{classInfo.price} Now
+                </Button>
+              </div>
+            </Card>
+          )}
+        </Container>
+      </div>
     </>
   );
 };
 
 export default PaymentPage;
-

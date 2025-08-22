@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -7,19 +7,22 @@ import {
 import AdminNavbar from "./adminnav";
 import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
 import { FaChartBar, FaChartPie } from "react-icons/fa";
-import './adminNav.css';
+import "./adminNav.css";
+import { StoreContext } from "../../context/StoreContext"; // ✅ import context
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 function Reports() {
+  const { url } = useContext(StoreContext); // ✅ get backend URL
   const [userStats, setUserStats] = useState([]);
   const [sessionStats, setSessionStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:9001/api/admin/reports")
-      .then(res => {
+    axios
+      .get(`${url}/api/admin/reports`) // ✅ dynamic backend URL
+      .then((res) => {
         setUserStats(res.data.userRegistrations);
         setSessionStats(res.data.sessionTypes);
         setLoading(false);
@@ -28,7 +31,7 @@ function Reports() {
         setError("❌ Failed to load reports. Please try again later.");
         setLoading(false);
       });
-  }, []);
+  }, [url]);
 
   if (loading) {
     return (
@@ -60,7 +63,7 @@ function Reports() {
   return (
     <div className="admin-dashboard-wrapper">
       <AdminNavbar />
-      <div className="admin-content" style={{ flexDirection: 'column', padding: '20px' }}>
+      <div className="admin-content" style={{ flexDirection: "column", padding: "20px" }}>
         <Container>
           <div className="text-center mb-5">
             <h2 className="fw-bold text-dark">📊 Admin Reports Dashboard</h2>
@@ -69,11 +72,14 @@ function Reports() {
 
           <Row>
             <Col md={6} className="mb-4">
-              <Card className="shadow-lg border-0" style={{
-                backdropFilter: "blur(10px)",
-                background: "rgba(255, 255, 255, 0.75)",
-                borderRadius: "20px"
-              }}>
+              <Card
+                className="shadow-lg border-0"
+                style={{
+                  backdropFilter: "blur(10px)",
+                  background: "rgba(255, 255, 255, 0.75)",
+                  borderRadius: "20px",
+                }}
+              >
                 <Card.Header className="bg-primary text-white d-flex align-items-center gap-2 rounded-top">
                   <FaChartBar /> User Registrations Over Months
                 </Card.Header>
@@ -96,11 +102,14 @@ function Reports() {
             </Col>
 
             <Col md={6} className="mb-4">
-              <Card className="shadow-lg border-0" style={{
-                backdropFilter: "blur(10px)",
-                background: "rgba(255, 255, 255, 0.75)",
-                borderRadius: "20px"
-              }}>
+              <Card
+                className="shadow-lg border-0"
+                style={{
+                  backdropFilter: "blur(10px)",
+                  background: "rgba(255, 255, 255, 0.75)",
+                  borderRadius: "20px",
+                }}
+              >
                 <Card.Header className="bg-success text-white d-flex align-items-center gap-2 rounded-top">
                   <FaChartPie /> Yoga Session Types Distribution
                 </Card.Header>
@@ -111,13 +120,18 @@ function Reports() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(0)}%`
+                      }
                       outerRadius={90}
                       fill="#8884d8"
                       dataKey="value"
                     >
                       {sessionStats.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />

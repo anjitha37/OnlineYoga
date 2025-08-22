@@ -1,79 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Form, Button, Container, Alert, Card } from 'react-bootstrap';
 import InstructorNav from './instructornav';
-import './instructorNav.css'; // ✅ for sidebar & background
+import './instructorNav.css';
+import { StoreContext } from "../../context/StoreContext"; // ✅ import
 
 const EditClass = () => {
-  const { id } = useParams(); // class ID from URL
+  const { url } = useContext(StoreContext); // ✅
+  const { id } = useParams();
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    className: '',
-    date: '',
-    time: '',
-    duration: '',
-    description: '',
-    price: ''
-  });
-
+  const [formData, setFormData] = useState({ className: '', date: '', time: '', duration: '', description: '', price: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Fetch existing class details
   useEffect(() => {
     const fetchClass = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:9001/api/instructor/myclasses`, {
+        const res = await axios.get(`${url}/api/instructor/myclasses`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-
         const foundClass = res.data.find(cls => cls._id === id);
-        if (!foundClass) {
-          setError('Class not found');
-          return;
-        }
+        if (!foundClass) return setError('Class not found');
 
         setFormData({
           className: foundClass.className,
-          date: foundClass.date?.split('T')[0], // format ISO date
+          date: foundClass.date?.split('T')[0],
           time: foundClass.time,
           duration: foundClass.duration,
           description: foundClass.description,
           price: foundClass.price
         });
       } catch (err) {
-        console.error(err);
         setError('Failed to fetch class details');
       }
     };
-
     fetchClass();
-  }, [id]);
+  }, [id, url]);
 
-  // Handle input changes
-  const handleChange = e => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  // Submit update
   const handleSubmit = async e => {
     e.preventDefault();
-    setMessage('');
-    setError('');
-
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:9001/api/instructor/updateclass/${id}`, formData, {
+      await axios.put(`${url}/api/instructor/updateclass/${id}`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       setMessage('Class updated successfully!');
       setTimeout(() => navigate('/instructor/myclasses'), 2000);
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.msg || 'Update failed');
     }
   };

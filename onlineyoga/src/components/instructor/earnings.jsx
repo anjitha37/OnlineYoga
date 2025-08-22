@@ -1,34 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
+import axios from 'axios';
+import { StoreContext } from "../../context/StoreContext"; // ✅ import
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer
 } from 'recharts';
 import InstructorNav from './instructornav';
-import './instructorNav.css'; 
+import './instructorNav.css';
 
 const Earnings = () => {
+  const { url } = useContext(StoreContext); // ✅ use url
   const instructorId = localStorage.getItem("instructorId");
-  const [stats, setStats] = useState({
-    totalEarnings: 0,
-    weeklyIncome: [],
-    monthlyIncome: [],
-    classCount: 0,
-    totalAttendance: 0
-  });
-
+  const [stats, setStats] = useState({ totalEarnings: 0, weeklyIncome: [], monthlyIncome: [], classCount: 0, totalAttendance: 0 });
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (instructorId && token) {
-      fetchEarningsData();
-    }
+    if (instructorId && token) fetchEarningsData();
     // eslint-disable-next-line
   }, [instructorId]);
 
   const fetchEarningsData = async () => {
     try {
-      const res = await axios.get(`http://localhost:9001/api/instructor/earnings/${instructorId}`, {
+      const res = await axios.get(`${url}/api/instructor/earnings/${instructorId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(res.data);

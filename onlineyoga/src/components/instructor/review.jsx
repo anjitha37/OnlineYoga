@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Container, Table, Button, Card, Badge } from 'react-bootstrap';
 import { FaStar } from 'react-icons/fa';
@@ -6,17 +6,19 @@ import { BiLike, BiDislike } from 'react-icons/bi';
 import { AiFillHeart } from 'react-icons/ai';
 import { BsEmojiNeutral } from 'react-icons/bs';
 import InstructorNav from './instructornav';
+import { StoreContext } from '../../context/StoreContext'; // ✅ import
 import './instructorNav.css';
 
 const InstructorReviews = () => {
   const [reviews, setReviews] = useState([]);
   const instructorId = localStorage.getItem('instructorId');
   const token = localStorage.getItem('token');
+  const { url } = useContext(StoreContext); // ✅
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(`http://localhost:9001/api/instructor/reviews/${instructorId}`, {
+        const res = await axios.get(`${url}/api/instructor/reviews/${instructorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setReviews(res.data);
@@ -25,18 +27,18 @@ const InstructorReviews = () => {
       }
     };
     fetchReviews();
-  }, [instructorId, token]);
+  }, [instructorId, token, url]);
 
   const handleEmojiReply = async (reviewId, emojiReply) => {
     try {
       await axios.post(
-        `http://localhost:9001/api/instructor/reviews/reply/${reviewId}`,
+        `${url}/api/instructor/reviews/reply/${reviewId}`,
         { reply: emojiReply },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert("Reply added!");
       // Refresh
-      const res = await axios.get(`http://localhost:9001/api/instructor/reviews/${instructorId}`, {
+      const res = await axios.get(`${url}/api/instructor/reviews/${instructorId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setReviews(res.data);

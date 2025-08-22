@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Table, Button, Container, Badge, Card } from 'react-bootstrap';
 import InstructorNav from './instructornav';
 import { useNavigate } from 'react-router-dom';
+import { StoreContext } from '../../context/StoreContext'; // ✅ import
 import './instructorNav.css';
 
 const MyClasses = () => {
   const [classes, setClasses] = useState([]);
   const navigate = useNavigate();
+  const { url } = useContext(StoreContext); // ✅
 
   const fetchMyClasses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:9001/api/instructor/myclasses', {
+      const res = await axios.get(`${url}/api/instructor/myclasses`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
