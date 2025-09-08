@@ -26,11 +26,73 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
+// const registerUser = async (req, res) => {
+//   try {
+//     const { fullname, email, password, phone, age, gender, experience, role, agreeTerms } = req.body;
+
+//     // Base validation
+//     const requiredFields = [
+//       !fullname && "Full name",
+//       !email && "Email",
+//       !password && "Password",
+//       !phone && "Phone number",
+//       !age && "Age",
+//       !gender && "Gender",
+//       !role && "Role",
+//       (agreeTerms !== "true") && "Agreement to terms"
+//     ].filter(Boolean);
+
+//     if (requiredFields.length > 0) {
+//       return res.status(400).json({ 
+//         msg: `Missing required fields: ${requiredFields.join(", ")}` 
+//       });
+//     }
+
+//     // Role-specific validation
+//     if (role === "user" && !experience) {
+//       return res.status(400).json({ msg: "Experience level is required for users" });
+//     }
+
+//     if (role === "instructor" && !req.file) {
+//       return res.status(400).json({ msg: "Certificate upload is required for instructors" });
+//     }
+
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(400).json({ msg: "Email already registered" });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     const newUser = new User({
+//       fullname,
+//       email,
+//       password: hashedPassword,
+//       phone,
+//       age: Number(age),
+//       gender,
+//       experience: role === "user" ? experience : undefined,
+//       role,
+//       certificate: role === "instructor" ? `certificates/${req.file.filename}` : undefined,
+//       agreeTerms: agreeTerms === "true"
+//     });
+
+//     await newUser.save();
+//     res.status(201).json({ msg: "User registered successfully" });
+
+//   } catch (err) {
+//     console.error("Registration error:", err);
+//     res.status(500).json({ 
+//       msg: err.code === 11000 ? "Email already exists" : "Server error during registration" 
+//     });
+//   }
+// };
+
+
 const registerUser = async (req, res) => {
   try {
     const { fullname, email, password, phone, age, gender, experience, role, agreeTerms } = req.body;
 
-    // Base validation
     const requiredFields = [
       !fullname && "Full name",
       !email && "Email",
@@ -48,7 +110,6 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // Role-specific validation
     if (role === "user" && !experience) {
       return res.status(400).json({ msg: "Experience level is required for users" });
     }
@@ -78,6 +139,30 @@ const registerUser = async (req, res) => {
     });
 
     await newUser.save();
+
+    // Nodemailer transporter using .env
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.ADMIN_EMAIL,
+        pass: process.env.ADMIN_EMAIL_PASSWORD
+      }
+    });
+
+    await transporter.sendMail({
+      from: `"Online Yoga Platform" <${process.env.ADMIN_EMAIL}>`,
+      to: email,
+      subject: 'Registration Successful',
+      text: `Hello ${fullname},\n\nYour account has been successfully registered as a ${role}.\n\nThank you for joining us!`
+    });
+
+    await transporter.sendMail({
+      from: `"Online Yoga Platform" <${process.env.ADMIN_EMAIL}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: 'New User Registered',
+      text: `A new user has registered:\n\nName: ${fullname}\nEmail: ${email}\nRole: ${role}\nPhone: ${phone}`
+    });
+
     res.status(201).json({ msg: "User registered successfully" });
 
   } catch (err) {
@@ -87,6 +172,7 @@ const registerUser = async (req, res) => {
     });
   }
 };
+
 
 
 
